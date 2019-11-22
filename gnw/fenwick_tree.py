@@ -12,7 +12,7 @@ class FenwickTree:
         self.offset = 0
 
         n_round = 1
-        while n_round < N:
+        while n_round < n:
             n_round *= 2
 
         #where rates start as leaves
@@ -51,7 +51,8 @@ class FenwickTree:
             else:
                 sibling = i - 1
 
-            parent = (i-1)/2
+            parent = (i-1)//2
+            ##print(i,sibling)
             self.nodes[parent] = self.nodes[i] + self.nodes[sibling]
             i = parent
 

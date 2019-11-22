@@ -12,7 +12,7 @@ class Node:
         self.rate = rate
         self._setNeighbours(network)
 
-    def reset():
+    def reset(self):
         self.rate = 1
         self.d = 0
         self.f = 0
