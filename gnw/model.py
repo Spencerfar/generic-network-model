@@ -1,38 +1,42 @@
 import numpy as np
-from fenwick_tree import FenwickTree
-
-import sys
-
-sys.path.append(sys.path)
-
+from .node import Node
+from .fenwick_tree import FenwickTree
+from .rates import damage_rate, repair_rate
 
 class Model:
     def __init__(self, network, gammap, gamman, R):
 
-        self.network = network #add symmetric-size check
-        self.parameters = parameters
+        #self.network = network #add symmetric-size check
 
-        self.state = []
+        # need to find top 2 most connected
+        self.m1 = 0
+        self.m2 = 1
+        
+        self.parameters = (gammap, gamman, R)
         
         self.n = network.shape[0]
-        
-    def _neighbours():
-        #find neigbours of each node in network
+
+        self.state = []
+        for i in range(self.n):
+            self.state.append(Node(i, network))
 
     def _resetState(self):
+        
         # reset state variable
+        for i in range(self.n):
+            self.state[i].reset()
 
     def _calculateRates(self, tree, index):
         
         # calculate the new rates given that node index changed
-        for i in self.neighbours[index]:
+        for i in self.state[index].neighbours:
             
             self.total_rate -= self.state[i].rate
 
             if self.state[i].d == 0:
-                self.state[i].rate = damage_rate(self.state[i].f)
+                self.state[i].rate = damage_rate(self.state[i].f, self.parameters)
             else:
-                self.state[i].rate = repair_rate(self.state[i].f)
+                self.state[i].rate = repair_rate(self.state[i].f, self.parameters)
 
             # update rates on tree
             tree.update(i, self.state[i].rate)
@@ -43,9 +47,9 @@ class Model:
         # now update index node
         self.total_rate -= self.state[index].rate
         if self.state[index].d == 0:
-            self.state[index].rate = damage_rate(self.state[index].f)
+            self.state[index].rate = damage_rate(self.state[index].f, self.parameters)
         else:
-            self.state[index].rate = repair_rate(self.state[index].f)
+            self.state[index].rate = repair_rate(self.state[index].f, self.parameters)
 
         # update rate on tree
         tree.update(index, self.state[index].rate)
@@ -66,7 +70,7 @@ class Model:
 
         # update neighbours
         new_f = 0
-        for i in self.neighbours[index]:
+        for i in self.state[index].neighbours:
             
             new_f += self.state[i].d
             
@@ -96,17 +100,17 @@ class Model:
         
         for run in range(num_runs):
             
-            self.tree = FenwickTree(n, 1.)
+            tree = FenwickTree(self.n, 1.)
             self._resetState()
-            self.total_rate = n
+            self.total_rate = self.n
             
             age = 0
             alive = True
-
+            
             while alive:
 
-                index = _findRate(tree)
-                self._updateState(index, run, age, state_changes)
+                index = self._findRate(tree)
+                age = self._updateState(index, run, age, state_changes)
                 self._calculateRates(tree, index)
 
                 if self._mortality() == 1:
