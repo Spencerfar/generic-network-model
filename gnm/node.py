@@ -3,14 +3,16 @@ import numpy as np
 
 class Node:
 
-    def __init__(self, id, network, f = 0, d = 0, rate = 0):
+    def __init__(self, id, network, f = 0, d = 0, rate = 0, create_neighbours = True):
 
         self.id = id
         self.k = network[:,id].sum().astype(int)
         self.f = f
         self.d = d
         self.rate = rate
-        self._setNeighbours(network)
+        
+        if create_neighbours:
+            self._setNeighbours(network)
 
     def reset(self):
         self.rate = 1
