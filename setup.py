@@ -1,5 +1,5 @@
 import setuptools
 
-setuptools.setup(name="Generic network model",
+setuptools.setup(name="generic network model",
       version="0.0",
-      packages=["gnw"])
+      packages=["gnm"])
