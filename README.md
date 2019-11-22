@@ -1,1 +1,1 @@
-
+This code simulates a generic network model of aging (GNM). Originally this code was written in C++, but here it is in Python for simplicity.
