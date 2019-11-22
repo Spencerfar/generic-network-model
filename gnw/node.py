@@ -26,7 +26,7 @@ class Node:
         neighbour_num = 0
         for i in range(n):
             if network[i, self.id] == 1:
-                neighbours[neighbour_num] = i
+                self.neighbours[neighbour_num] = i
                 neighbour_num += 1
             
         
