@@ -6,6 +6,25 @@ from .rates import damage_rate, repair_rate
 class Model:
     def __init__(self, network, gammap, gamman, R):
 
+        self.n = len(network)
+
+        self.state = []
+            
+        # adjacency list
+        if type(network) == list:
+
+            for i in range(self.n):
+                self.state.neighbours = np.array(network[i])
+        
+        # adjacency matrix
+        elif type(network) == np.ndarray:
+            assert network.shape[0] == network.shape[1], "Error: adjacency matrix not symmetric"
+            for i in range(self.n):
+                self.state.append(Node(i, network))
+
+        else:
+            assert False, "Error: network format not recognized"
+        
         #self.network = network #add symmetric-size check
 
         # need to find top 2 most connected
@@ -13,12 +32,7 @@ class Model:
         self.m2 = 1
         
         self.parameters = (gammap, gamman, R)
-        
-        self.n = network.shape[0]
-
-        self.state = []
-        for i in range(self.n):
-            self.state.append(Node(i, network))
+    
 
     def _resetState(self):
         
