@@ -14,18 +14,21 @@ class Model:
         if type(network) == list:
 
             for i in range(self.n):
-                self.state.neighbours = np.array(network[i])
+
+                assert i not in network[i], "Error: trying to connect node to itself"
+                
+                self.state.append(Node(i, create_neighbours = False))
+                self.state[i].neighbours = np.array(network[i])
+                self.state[i].k = len(self.state[i].neighbours)
         
         # adjacency matrix
         elif type(network) == np.ndarray:
-            assert network.shape[0] == network.shape[1], "Error: adjacency matrix not symmetric"
+            assert network.shape[0] == network.shape[1], "Error: adjacency matrix not square"
             for i in range(self.n):
                 self.state.append(Node(i, network))
 
         else:
             assert False, "Error: network format not recognized"
-        
-        #self.network = network #add symmetric-size check
 
         # need to find top 2 most connected
         self.m1 = 0

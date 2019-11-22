@@ -3,16 +3,20 @@ import numpy as np
 
 class Node:
 
-    def __init__(self, id, network, f = 0, d = 0, rate = 0, create_neighbours = True):
+    def __init__(self, id, network = [], f = 0, d = 0, rate = 0, create_neighbours = True):
 
         self.id = id
-        self.k = network[:,id].sum().astype(int)
         self.f = f
         self.d = d
         self.rate = rate
+        self.k = 0
+        self.neighbours = []
         
         if create_neighbours:
+            assert type(network) == np.ndarray, "Error: network not ndarray"
+            self.k = network[:,id].sum().astype(int)
             self._setNeighbours(network)
+            
 
     def reset(self):
         self.rate = 1
