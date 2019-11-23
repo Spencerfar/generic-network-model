@@ -15,8 +15,38 @@ def _findNode(tree):
     return tree.search(tree.total_sum*np.random.rand())
 
 
-# create a scale free network with given alpha
 def scale_free_network(n, alpha, avgk):
+    """
+    Create a scale free network with a given exponent alpha by shifted linear
+    preferential attachment. More details in these papers, 
+    Krapivsky, Redner 'Organization of Growing Random Networks', https://arxiv.org/pdf/cond-mat/0011094.pdf 
+    Fotouhi, Rabbat 'Degree Correlation in Scale-Free Graphs', https://arxiv.org/pdf/1308.5169.pdf
+
+    Parameters
+    ----------
+
+    n : int
+        Network size.
+    
+    alpha : float
+        Scale free exponent, k^{-alpha}. Must be > 2.
+
+    avgk : int
+        Average degree. Must be even and >= 2.
+    
+    Returns
+    -------
+
+    neighbours : list of lists
+        Adjacency list for the network. First dimension is n. Then the lists within this
+        list have length k, where k is the degree of the node.
+    
+
+    """
+
+    assert alpha > 2, "Error: Scale free exponent must be > 2."
+    assert avgk % 2 == 0, "Error: Average degree must be even."
+    assert avgk >= 2, "Error: Average degree must be >= 2."
 
     m = avgk//2
     m0 = m
