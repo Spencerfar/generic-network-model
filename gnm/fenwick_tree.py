@@ -127,11 +127,11 @@ class FenwickTree:
         """
         
         #reset tree to zero
-        for i in range(self.ntotal):
+        for i in range(self.n_total):
             self.nodes[i] = 0
 
         #set leaves
-        for i in range(self.offset, offset + n):
+        for i in range(self.offset, self.offset + self.n):
             self.nodes[i] = initial_rate
 
         self._sumTree()

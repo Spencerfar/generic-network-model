@@ -169,9 +169,11 @@ class Model:
         state_changes = []
         death_ages = np.zeros(num_runs)
         
+        tree = FenwickTree(self.n, 1.)
+        
         for run in range(num_runs):
             
-            tree = FenwickTree(self.n, 1.)
+            tree.resetTree(1.)
             self._resetState()
             self.total_rate = self.n
             
