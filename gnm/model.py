@@ -24,6 +24,8 @@ class Model:
         # adjacency matrix
         elif type(network) == np.ndarray:
             assert network.shape[0] == network.shape[1], "Error: adjacency matrix not square"
+            assert np.all(np.diagonal(network) == 0), "Error: non-zero diagonal of adjacency matrix"
+            
             for i in range(self.n):
                 self.state.append(Node(i, network))
 
