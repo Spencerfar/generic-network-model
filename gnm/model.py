@@ -4,6 +4,30 @@ from .fenwick_tree import FenwickTree
 from .rates import damage_rate, repair_rate
 
 class Model:
+    """
+    Generic network model of aging (GNM).
+
+    Parameters
+    ----------
+    
+    network : list of lists or 2d array
+        Adjacency list (list of neighbour lists) or adjacency matrix (2d array). 
+        Adjacency list must contain no self loops. Adjacency matrix must be square and 
+        have zero diagonal.
+
+    gammap : float
+        Damage rate parameter.
+
+    gamman : float
+        Repair rate parameter.
+
+    R : float
+        Ratio of damage rate to repair rate.
+
+    record_deficits : bool, default = True
+        If True, outputs recorded node trajectories.
+
+    """
     def __init__(self, network, gammap, gamman, R, record_deficits = True):
 
         self.n = len(network)
@@ -116,11 +140,31 @@ class Model:
 
     
     def _mortality(self):
+        # evaluate mortality
         return self.state[self.m1].d*self.state[self.m2].d
 
     
     def simulate(self, num_runs):
-        # perform simulation
+        """
+        Perform simulation.
+
+        Parameters
+        ----------
+
+        num_runs : int
+            Number of individuals to simulate.
+
+        Returns
+        -------
+
+        death_ages : array, shape = [num_runs]
+             Death ages for each simulated individual. Unscaled.
+
+        state_changes : array, shape = [num_runs, 4]
+            Returns the state changes of nodes for all simulated individuals. 
+            Each row contains [age, node index, new node state, individual id]
+            
+        """
 
         state_changes = []
         death_ages = np.zeros(num_runs)
