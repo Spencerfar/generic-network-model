@@ -4,7 +4,7 @@ from .fenwick_tree import FenwickTree
 from .rates import damage_rate, repair_rate
 
 class Model:
-    def __init__(self, network, gammap, gamman, R):
+    def __init__(self, network, gammap, gamman, R, record_deficits = True):
 
         self.n = len(network)
 
@@ -35,6 +35,8 @@ class Model:
         # need to find top 2 most connected
         self.m1 = 0
         self.m2 = 1
+
+        self.record_deficits = record_deficits
         
         self.parameters = (gammap, gamman, R)
     
@@ -45,6 +47,7 @@ class Model:
         for i in range(self.n):
             self.state[i].reset()
 
+    
     def _calculateRates(self, tree, index):
         
         # calculate the new rates given that node index changed
@@ -76,12 +79,14 @@ class Model:
         # update new total rate
         self.total_rate += self.state[index].rate
 
+    
     def _findRate(self, tree):
         # find index of next event
         val = self.total_rate * np.random.rand()
         index = tree.search(val)
         return index
-        
+
+    
     def _updateState(self, index, run, age, state_changes):
         
         # change state 0->1, 1->0
@@ -102,15 +107,18 @@ class Model:
         self.state[index].f = new_f/self.state[index].k
 
         # record for output
-        state_changes.append(np.array([age, index,
+        if self.record_deficits:
+            state_changes.append(np.array([age, index,
                                            self.state[index].d, run]))
 
         # update time
         return age - 1/self.total_rate * np.log(1 - np.random.rand())
 
+    
     def _mortality(self):
         return self.state[self.m1].d*self.state[self.m2].d
-            
+
+    
     def simulate(self, num_runs):
         # perform simulation
 
@@ -136,7 +144,7 @@ class Model:
                     alive = False
                     death_ages[run] = age
 
-        return death_ages, np.array(state_changes)
-            
-            
-    
+        if self.record_deficits:
+            return death_ages, np.array(state_changes)
+        else:
+            return death_ages
