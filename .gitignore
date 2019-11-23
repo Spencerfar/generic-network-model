@@ -1,3 +1,9 @@
-# -*- mode: gitignore; -*-
+# emacs temp files
 *.~
+
+# python
 *.pyc
+__pycache__/
+build/
+dist/
+*.egg-info/
