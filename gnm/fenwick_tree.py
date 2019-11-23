@@ -84,7 +84,7 @@ class FenwickTree:
                 sibling = i - 1
 
             parent = (i-1)//2
-            ##print(i,sibling)
+            
             self.nodes[parent] = self.nodes[i] + self.nodes[sibling]
             i = parent
 
