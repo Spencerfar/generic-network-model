@@ -12,7 +12,9 @@ def _connectNodes(i, j, degrees, neighbours):
 
     
 def _findNode(tree):
-    return tree.search(tree.total_sum*np.random.rand())
+    val = tree.total_sum*np.random.rand()
+    assert val >= 0, "Error: Trying to find negative value in tree for network creation."
+    return tree.search(val)
 
 
 def scale_free_network(n, alpha, avgk):
@@ -49,7 +51,7 @@ def scale_free_network(n, alpha, avgk):
     assert avgk >= 2, "Error: Average degree must be >= 2."
 
     m = avgk//2
-    m0 = m
+    m0 = m + 2
 
     w = (alpha-3)*m
 
@@ -70,7 +72,7 @@ def scale_free_network(n, alpha, avgk):
             _connectNodes(i, j, degrees, neighbours)
             tree.update(i, degrees[i] + w)
             tree.update(j, degrees[j] + w)
-
+    
     # add other nodes
     for i in range(m0, n):
 
@@ -95,6 +97,5 @@ def scale_free_network(n, alpha, avgk):
             _connectNodes(i, node, degrees, neighbours)
             tree.update(i, degrees[i] + w)
             tree.update(node, degrees[node] + w)
-
             
     return neighbours
