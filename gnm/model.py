@@ -5,7 +5,7 @@ from .rates import damage_rate, repair_rate
 
 class Model:
     """
-    Generic network model of aging (GNM).
+    Generic network model of aging (GNM). 
 
     Parameters
     ----------
@@ -106,7 +106,7 @@ class Model:
                 """
                 Insert code modifying the damage/repair of specific nodes here.
 
-                _manualDamage(index, new_value, tree) can be used to set node with id "index"
+                self._manualDamage(index, new_value, tree) can be used to set node with id "index"
                 to new_value. Also updates rates.
                 
                 """
