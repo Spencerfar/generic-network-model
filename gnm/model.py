@@ -63,14 +63,120 @@ class Model:
         self.record_deficits = record_deficits
         
         self.parameters = (gammap, gamman, R)
-    
 
+    
+    def simulate(self, num_runs):
+        """
+        Perform simulation.
+
+        Parameters
+        ----------
+
+        num_runs : int
+            Number of individuals to simulate.
+
+        Returns
+        -------
+
+        death_ages : array, shape = [num_runs]
+             Death ages for each simulated individual. Unscaled.
+
+        state_changes : array, shape = [num_runs, 4]
+            Returns the state changes of nodes for all simulated individuals. 
+            Each row contains [age, node index, new node state, individual id]
+            
+        """
+
+        state_changes = []
+        death_ages = np.zeros(num_runs)
+        
+        tree = FenwickTree(self.n, 1.)
+        
+        for run in range(num_runs):
+            
+            tree.resetTree(1.)
+            self._resetState()
+            self.total_rate = self.n
+            
+            age = 0
+            alive = True
+            
+            while alive:
+                
+                """
+                Insert code modifying the damage/repair of specific nodes here.
+
+                _manualDamage(index, new_value, tree) can be used to set node with id "index"
+                to new_value. Also updates rates.
+                
+                """
+
+                # find index of next event
+                index = self._findRate(tree)
+                
+                # apply next event and update age
+                age = self._updateState(index, run, age, state_changes)
+                
+                # update rates
+                self._calculateRates(tree, index)
+                
+                # check mortality
+                if self._mortality() == 1:
+                    alive = False
+                    death_ages[run] = age
+
+        if self.record_deficits:
+            return death_ages, np.array(state_changes)
+        
+        else:
+            return death_ages
+
+    
+    def _manualDamage(index, new_value, tree):
+        
+        # set new value of node
+        self.state[index].d = new_value
+        
+        # update rates
+        self._calculateRates(tree, index)
+
+    
     def _resetState(self):
         
         # reset state variable
         for i in range(self.n):
             self.state[i].reset()
 
+    def _updateState(self, index, run, age, state_changes):
+        
+        # change state 0->1, 1->0
+        self.state[index].d = (self.state[index].d+1)%2
+
+        # update neighbours
+        new_f = 0
+        for i in self.state[index].neighbours:
+            
+            new_f += self.state[i].d
+            
+            if self.state[index].d == 0:
+                self.state[i].f -= 1/self.state[i].k
+            else:
+                self.state[i].f += 1/self.state[i].k
+            
+        # update this node's local frailty
+        self.state[index].f = new_f/self.state[index].k
+
+        # record for output
+        if self.record_deficits:
+            state_changes.append(np.array([age, index,
+                                           self.state[index].d, run]))
+
+        # update age
+        new_age = age - 1/self.total_rate * np.log(1 - np.random.rand())
+            
+        # return new age
+        return new_age
+            
     
     def _calculateRates(self, tree, index):
         
@@ -111,86 +217,6 @@ class Model:
         return index
 
     
-    def _updateState(self, index, run, age, state_changes):
-        
-        # change state 0->1, 1->0
-        self.state[index].d = (self.state[index].d+1)%2
-
-        # update neighbours
-        new_f = 0
-        for i in self.state[index].neighbours:
-            
-            new_f += self.state[i].d
-            
-            if self.state[index].d == 0:
-                self.state[i].f -= 1/self.state[i].k
-            else:
-                self.state[i].f += 1/self.state[i].k
-            
-        # update this node's local frailty
-        self.state[index].f = new_f/self.state[index].k
-
-        # record for output
-        if self.record_deficits:
-            state_changes.append(np.array([age, index,
-                                           self.state[index].d, run]))
-
-        # update time
-        return age - 1/self.total_rate * np.log(1 - np.random.rand())
-
-    
     def _mortality(self):
         # evaluate mortality
         return self.state[self.m1].d*self.state[self.m2].d
-
-    
-    def simulate(self, num_runs):
-        """
-        Perform simulation.
-
-        Parameters
-        ----------
-
-        num_runs : int
-            Number of individuals to simulate.
-
-        Returns
-        -------
-
-        death_ages : array, shape = [num_runs]
-             Death ages for each simulated individual. Unscaled.
-
-        state_changes : array, shape = [num_runs, 4]
-            Returns the state changes of nodes for all simulated individuals. 
-            Each row contains [age, node index, new node state, individual id]
-            
-        """
-
-        state_changes = []
-        death_ages = np.zeros(num_runs)
-        
-        tree = FenwickTree(self.n, 1.)
-        
-        for run in range(num_runs):
-            
-            tree.resetTree(1.)
-            self._resetState()
-            self.total_rate = self.n
-            
-            age = 0
-            alive = True
-            
-            while alive:
-
-                index = self._findRate(tree)
-                age = self._updateState(index, run, age, state_changes)
-                self._calculateRates(tree, index)
-
-                if self._mortality() == 1:
-                    alive = False
-                    death_ages[run] = age
-
-        if self.record_deficits:
-            return death_ages, np.array(state_changes)
-        else:
-            return death_ages
