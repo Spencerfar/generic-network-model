@@ -1,7 +1,5 @@
 import numpy as np
-
-
-
+		
 class FenwickTree:
     """
     Creates a partial sum tree for quicker evaluation of partial sums.
@@ -52,6 +50,7 @@ class FenwickTree:
 
         self.total_sum = self.nodes[0]
 
+	
     def update(self, index, value):
         """
         Change the value of leaf node index to value, 
@@ -135,4 +134,3 @@ class FenwickTree:
             self.nodes[i] = initial_rate
 
         self._sumTree()
-            

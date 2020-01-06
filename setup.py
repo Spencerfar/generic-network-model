@@ -1,5 +1,8 @@
-import setuptools
+from setuptools import setup
 
-setuptools.setup(name="generic network model",
-      version="0.0",
-      packages=["gnm"])
+setup (
+	name = "generic network model",
+	version='1.0',
+	packages=['gnm'],
+	install_requires=['numpy'],
+)
