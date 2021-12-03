@@ -3,14 +3,16 @@ import matplotlib.pyplot as plt
 from gnm.model import Model
 from gnm.networks import scale_free_network
 
+# scale free network function returns an adjacency list for a scale free network
+N = 100 # number of nodes
+alpha = 2.27 # scale-free exponent
+avg_degree = 4 # average node degree
+network = scale_free_network(N, alpha, avg_degree)
+
+# create model with chosen network and parameters
 gammap = 7.5 # gamma_+
 gamman = 6.5 # gamma_-
 R = 1.0 # Gamma_+/Gamma_-
-
-# scale free network function returns an adjacency list for a scale free network
-network = scale_free_network(100, 2.27, 4)
-
-# create model with chosen network and parameters
 model = Model(network, gammap, gamman, R)
 
 # simulate for num_individuals
